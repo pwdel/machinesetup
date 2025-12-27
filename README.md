@@ -2,7 +2,7 @@
 
 ### Initial, Installation Tools
 
-* Brew, then add to path.
+* [Brew](https://brew.sh), then add to path.
 
 ```
     echo >> /Users/patrick/.zprofile
