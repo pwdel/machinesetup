@@ -108,3 +108,10 @@ source ~/.zshrc
 ```
 
 ...may need to hardwire to get direnv working, need to read documentation.
+
+
+* uv
+
+```
+brew install uv
+```
