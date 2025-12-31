@@ -1,4 +1,4 @@
-# My Machine Setup
+# My Machine Setup - MacOS
 
 ### Initial, Installation Tools
 
@@ -9,6 +9,10 @@
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/patrick/.zprofile
     eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
+
+### Python
+
+* Install Python with [Brew](https://docs.brew.sh/Homebrew-and-Python)
 
 * Ensure pip installed
 
