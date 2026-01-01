@@ -138,3 +138,5 @@ brew install uv
 ```
 brew install tree
 ```
+
+### Setting Up Infinite History
