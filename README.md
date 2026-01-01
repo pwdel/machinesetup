@@ -40,12 +40,6 @@ Verify with:
 pip-compile --version
 ```
 
-* tree
-
-```
-brew install tree
-```
-
 ### Aliasing
 
 * pip
@@ -76,6 +70,24 @@ Then a python environment can be activated with:
 pyenv shell 3.12.2 && \
 python --version \
 which python
+```
+### SSH
+
+
+```
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+```
+eval "$(ssh-agent -s)"
+```
+
+```
+ssh-add ~/.ssh/id_ed25519
+```
+
+```
+pbcopy < ~/.ssh/id_ed25519.pub
 ```
 
 ### Additional Tools
@@ -118,4 +130,11 @@ source ~/.zshrc
 
 ```
 brew install uv
+```
+
+
+* tree
+
+```
+brew install tree
 ```
