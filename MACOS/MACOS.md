@@ -38,6 +38,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 Install:
 
+- `ansible`
 - `direnv`
 - `uv`
 - `pyenv`
@@ -49,7 +50,7 @@ Install:
 - `opencode`
 
 ```bash
-brew install direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
+brew install ansible direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
 ```
 
 ### GUI and larger tooling
@@ -58,10 +59,11 @@ Install:
 
 - `codex`
 - `docker-desktop`
+- `virtualbox`
 - `vagrant`
 
 ```bash
-brew install --cask codex docker-desktop vagrant
+brew install --cask codex docker-desktop virtualbox vagrant
 ```
 
 ## Shell configuration
@@ -170,10 +172,28 @@ chown -R "$(whoami)":staff data
 
 ## Vagrant
 
-Vagrant is optional but useful when isolating automated coding work in a VM:
+Vagrant is a required part of the layered automation setup, not an optional extra. The intended stack is:
+
+- macOS host
+- Vagrant VM
+- Docker inside the VM
+- automated coding inside containers running against isolated forks
 
 ```bash
-brew install --cask vagrant
+brew install --cask virtualbox vagrant
+```
+
+## Ansible
+
+Ansible is also a required host dependency. The intended pattern is:
+
+- the macOS host runs Ansible
+- Ansible provisions the Vagrant guest
+- the guest installs and manages Docker
+- coding workloads run inside Docker rather than directly on the host or directly on the VM
+
+```bash
+brew install ansible
 ```
 
 ## One-shot installer
@@ -186,7 +206,6 @@ bash MACOS/install.sh
 Optional environment flags:
 
 - `INSTALL_DOCKER=0`
-- `INSTALL_VAGRANT=0`
 - `INSTALL_CODEX=0`
 - `PYTHON_VERSION=3.12`
 
@@ -198,7 +217,9 @@ Optional environment flags:
 - `pyenv --version`
 - `pre-commit --version`
 - `opencode --version`
+- `ansible --version`
 - `codex --version`
 - `docker --version`
 - `docker compose version`
+- `VBoxManage --version`
 - `vagrant --version`

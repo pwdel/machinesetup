@@ -9,7 +9,6 @@ fi
 PROJECTS_DIR="${PROJECTS_DIR:-$HOME/Projects}"
 PYTHON_VERSION="${PYTHON_VERSION:-3.12}"
 INSTALL_DOCKER="${INSTALL_DOCKER:-1}"
-INSTALL_VAGRANT="${INSTALL_VAGRANT:-1}"
 INSTALL_CODEX="${INSTALL_CODEX:-1}"
 
 append_if_missing() {
@@ -45,7 +44,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 append_if_missing "$HOME/.zprofile" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 
 brew update
-brew install direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
+brew install ansible direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
 
 if [[ "$INSTALL_CODEX" == "1" ]]; then
   brew install --cask codex
@@ -55,9 +54,7 @@ if [[ "$INSTALL_DOCKER" == "1" ]]; then
   brew install --cask docker-desktop
 fi
 
-if [[ "$INSTALL_VAGRANT" == "1" ]]; then
-  brew install --cask vagrant
-fi
+brew install --cask virtualbox vagrant
 
 append_if_missing "$HOME/.zshrc" 'eval "$(direnv hook zsh)"'
 append_if_missing "$HOME/.zshrc" 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"'
@@ -88,6 +85,7 @@ Next recommended steps:
   2. cd $PROJECTS_DIR/safe && direnv allow && pre-commit install
   3. cd $PROJECTS_DIR/mlx-test && direnv allow && uv sync
   4. If Docker Desktop was installed, open it once before using socialpredict
+  5. Verify Ansible and Vagrant with: ansible --version && vagrant --version
 
 Reference:
   $PROJECTS_DIR/machinesetup/MACOS/MACOS.md
