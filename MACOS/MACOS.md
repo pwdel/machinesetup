@@ -188,6 +188,18 @@ brew install hashicorp/tap/hashicorp-vagrant
 
 On Apple silicon, provider and box compatibility still needs to be chosen deliberately per project. Do not assume an old `ubuntu/noble64` VirtualBox box will work unchanged on every Mac.
 
+The current `safe` scaffold defaults to:
+
+- provider: `virtualbox`
+- box: `hashicorp-education/ubuntu-24-04`
+- version: `0.1.0`
+
+If VirtualBox on Apple silicon fails to boot, HashiCorp’s docs note this workaround:
+
+```bash
+VBoxManage setextradata global "VBoxInternal/Devices/pcbios/0/Config/DebugLevel"
+```
+
 ## Ansible
 
 Ansible is also a required host dependency. The intended pattern is:
