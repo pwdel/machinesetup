@@ -60,10 +60,11 @@ Install:
 - `codex`
 - `docker-desktop`
 - `virtualbox`
-- `vagrant`
 
 ```bash
-brew install --cask codex docker-desktop virtualbox vagrant
+brew install --cask codex docker-desktop virtualbox
+brew tap hashicorp/tap
+brew install hashicorp/tap/hashicorp-vagrant
 ```
 
 ## Shell configuration
@@ -180,8 +181,12 @@ Vagrant is a required part of the layered automation setup, not an optional extr
 - automated coding inside containers running against isolated forks
 
 ```bash
-brew install --cask virtualbox vagrant
+brew install --cask virtualbox
+brew tap hashicorp/tap
+brew install hashicorp/tap/hashicorp-vagrant
 ```
+
+On Apple silicon, provider and box compatibility still needs to be chosen deliberately per project. Do not assume an old `ubuntu/noble64` VirtualBox box will work unchanged on every Mac.
 
 ## Ansible
 
