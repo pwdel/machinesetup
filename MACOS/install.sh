@@ -9,7 +9,6 @@ fi
 PROJECTS_DIR="${PROJECTS_DIR:-$HOME/Projects}"
 PYTHON_VERSION="${PYTHON_VERSION:-3.12}"
 INSTALL_DOCKER="${INSTALL_DOCKER:-1}"
-INSTALL_VAGRANT="${INSTALL_VAGRANT:-1}"
 INSTALL_CODEX="${INSTALL_CODEX:-1}"
 
 append_if_missing() {
@@ -43,9 +42,11 @@ fi
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 append_if_missing "$HOME/.zprofile" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+append_if_missing "$HOME/.bash_profile" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+append_if_missing "$HOME/.bashrc" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 
 brew update
-brew install direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
+brew install ansible multipass direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
 
 if [[ "$INSTALL_CODEX" == "1" ]]; then
   brew install --cask codex
@@ -55,12 +56,9 @@ if [[ "$INSTALL_DOCKER" == "1" ]]; then
   brew install --cask docker-desktop
 fi
 
-if [[ "$INSTALL_VAGRANT" == "1" ]]; then
-  brew install --cask vagrant
-fi
-
 append_if_missing "$HOME/.zshrc" 'eval "$(direnv hook zsh)"'
 append_if_missing "$HOME/.zshrc" 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"'
+append_if_missing "$HOME/.bashrc" 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"'
 
 append_block_if_missing "$HOME/.zshrc" '# machinesetup-pyenv-init' "$(cat <<'EOF'
 # machinesetup-pyenv-init
@@ -69,6 +67,24 @@ if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv init - zsh)"
   eval "$(pyenv virtualenv-init -)"
 fi
+EOF
+)"
+
+append_block_if_missing "$HOME/.zshrc" '# safe-vm-tools' "$(cat <<'EOF'
+# safe-vm-tools
+alias mp='multipass'
+alias ap='ansible-playbook'
+alias safe-bootstrap='bash "$HOME/Projects/safe/infra/scripts/bootstrap_mac.sh"'
+alias safe-vm='bash "$HOME/Projects/safe/infra/scripts/mp-shell.sh"'
+EOF
+)"
+
+append_block_if_missing "$HOME/.bashrc" '# safe-vm-tools' "$(cat <<'EOF'
+# safe-vm-tools
+alias mp='multipass'
+alias ap='ansible-playbook'
+alias safe-bootstrap='bash "$HOME/Projects/safe/infra/scripts/bootstrap_mac.sh"'
+alias safe-vm='bash "$HOME/Projects/safe/infra/scripts/mp-shell.sh"'
 EOF
 )"
 
@@ -88,6 +104,8 @@ Next recommended steps:
   2. cd $PROJECTS_DIR/safe && direnv allow && pre-commit install
   3. cd $PROJECTS_DIR/mlx-test && direnv allow && uv sync
   4. If Docker Desktop was installed, open it once before using socialpredict
+  5. Verify Ansible and Multipass with: ansible --version && multipass version
+  6. Try the shell helpers: safe-bootstrap && safe-vm
 
 Reference:
   $PROJECTS_DIR/machinesetup/MACOS/MACOS.md
