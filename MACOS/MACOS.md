@@ -171,9 +171,14 @@ pbcopy < ~/.ssh/id_ed25519.pub
 
 ```bash
 cd ~/Projects/safe
-direnv allow
 pre-commit install
+bash infra/scripts/bootstrap_mac.sh
 ```
+
+Notes:
+
+- `direnv allow` is optional for the VM bootstrap path
+- `safe` expects a local SSH keypair such as `~/.ssh/id_ed25519` and seeds `~/.ssh/id_ed25519.pub` into the guest so Ansible can connect
 
 ### `mlx-test`
 
