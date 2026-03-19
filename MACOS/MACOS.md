@@ -73,6 +73,13 @@ brew install --cask codex docker-desktop
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 ```
 
+If you still use `bash`, add the same shellenv there too:
+
+```bash
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bashrc
+```
+
 ### direnv
 
 ```bash
@@ -96,6 +103,28 @@ EOF
 ```bash
 echo 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"' >> ~/.zshrc
 ```
+
+If you still use `bash`, add the same path there too:
+
+```bash
+echo 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"' >> ~/.bashrc
+```
+
+### Ansible and Multipass shell helpers
+
+These tools do not need custom environment variables, but they benefit from a few stable aliases for the `safe` workflow:
+
+```bash
+cat <<'EOF' >> ~/.zshrc
+# safe-vm-tools
+alias mp='multipass'
+alias ap='ansible-playbook'
+alias safe-bootstrap='bash "$HOME/Projects/safe/infra/scripts/bootstrap_mac.sh"'
+alias safe-vm='bash "$HOME/Projects/safe/infra/scripts/mp-shell.sh"'
+EOF
+```
+
+If you still use `bash`, add the same block to `~/.bashrc`.
 
 ## Python strategy
 
