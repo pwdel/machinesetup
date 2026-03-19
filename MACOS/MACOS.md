@@ -67,6 +67,11 @@ brew install --cask codex docker-desktop
 
 ## Shell configuration
 
+Sample source-of-truth files for the macOS shell setup live here:
+
+- `MACOS/templates/zprofile.example`
+- `MACOS/templates/zshrc.example`
+
 ### Homebrew
 
 ```bash
