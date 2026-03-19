@@ -39,6 +39,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 Install:
 
 - `ansible`
+- `multipass`
 - `direnv`
 - `uv`
 - `pyenv`
@@ -50,7 +51,7 @@ Install:
 - `opencode`
 
 ```bash
-brew install ansible direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
+brew install ansible multipass direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
 ```
 
 ### GUI and larger tooling
@@ -59,12 +60,9 @@ Install:
 
 - `codex`
 - `docker-desktop`
-- `virtualbox`
 
 ```bash
-brew install --cask codex docker-desktop virtualbox
-brew tap hashicorp/tap
-brew install hashicorp/tap/hashicorp-vagrant
+brew install --cask codex docker-desktop
 ```
 
 ## Shell configuration
@@ -171,41 +169,27 @@ chown -R "$(whoami)":staff data
 ./SocialPredict up
 ```
 
-## Vagrant
+## Multipass
 
-Vagrant is a required part of the layered automation setup, not an optional extra. The intended stack is:
+Multipass is the recommended VM layer for the `safe` automation stack on macOS Apple silicon. The intended stack is:
 
 - macOS host
-- Vagrant VM
+- Multipass VM
 - Docker inside the VM
 - automated coding inside containers running against isolated forks
 
 ```bash
-brew install --cask virtualbox
-brew tap hashicorp/tap
-brew install hashicorp/tap/hashicorp-vagrant
+brew install multipass
 ```
 
-On Apple silicon, provider and box compatibility still needs to be chosen deliberately per project. Do not assume an old `ubuntu/noble64` VirtualBox box will work unchanged on every Mac.
-
-The current `safe` scaffold defaults to:
-
-- provider: `virtualbox`
-- box: `hashicorp-education/ubuntu-24-04`
-- version: `0.1.0`
-
-If VirtualBox on Apple silicon fails to boot, HashiCorp’s docs note this workaround:
-
-```bash
-VBoxManage setextradata global "VBoxInternal/Devices/pcbios/0/Config/DebugLevel"
-```
+Vagrant still belongs in the broader machine setup toolbox, but it is not the recommended `safe` implementation on Apple silicon.
 
 ## Ansible
 
 Ansible is also a required host dependency. The intended pattern is:
 
 - the macOS host runs Ansible
-- Ansible provisions the Vagrant guest
+- Ansible provisions the Multipass guest
 - the guest installs and manages Docker
 - coding workloads run inside Docker rather than directly on the host or directly on the VM
 
@@ -238,5 +222,4 @@ Optional environment flags:
 - `codex --version`
 - `docker --version`
 - `docker compose version`
-- `VBoxManage --version`
-- `vagrant --version`
+- `multipass version`
