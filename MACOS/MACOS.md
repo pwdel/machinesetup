@@ -46,10 +46,13 @@ Install:
 - `gettext`
 - `tree`
 - `gh`
+- `trufflehog`
+- `terraform`
+- `doctl`
 - `opencode`
 
 ```bash
-brew install direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
+brew install direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl opencode
 ```
 
 ### GUI and larger tooling

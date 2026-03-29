@@ -45,7 +45,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 append_if_missing "$HOME/.zprofile" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 
 brew update
-brew install direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
+brew install direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl opencode
 
 if [[ "$INSTALL_CODEX" == "1" ]]; then
   brew install --cask codex
