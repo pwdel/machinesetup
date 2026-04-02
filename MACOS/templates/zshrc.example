@@ -1,0 +1,18 @@
+alias python=python3
+alias pip=pip3
+
+eval "$(direnv hook zsh)"
+export PATH="/opt/homebrew/opt/gettext/bin:$PATH"
+
+# machinesetup-pyenv-init
+export PYENV_ROOT="$HOME/.pyenv"
+if command -v pyenv >/dev/null 2>&1; then
+  eval "$(pyenv init - zsh)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+
+# safe-vm-tools
+alias mp='multipass'
+alias ap='ansible-playbook'
+alias safe-bootstrap='bash "$HOME/Projects/safe/infra/scripts/bootstrap_mac.sh"'
+alias safe-vm='bash "$HOME/Projects/safe/infra/scripts/mp-shell.sh"'
