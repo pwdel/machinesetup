@@ -48,11 +48,16 @@ Install:
 - `gettext`
 - `tree`
 - `gh`
+- `trufflehog`
+- `terraform`
+- `doctl`
 - `opencode`
 
 ```bash
-brew install ansible multipass direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
+brew install ansible multipass direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl opencode
 ```
+
+The install script installs these by default. Skip `opencode` with `INSTALL_OPENCODE=0`.
 
 ### GUI and larger tooling
 
@@ -64,6 +69,8 @@ Install:
 ```bash
 brew install --cask codex docker-desktop
 ```
+
+The install script installs these casks by default. Skip them with `INSTALL_CODEX=0` or `INSTALL_DOCKER=0`.
 
 ## Shell configuration
 
@@ -91,6 +98,12 @@ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bashrc
 echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
 ```
 
+If you still use `bash`, add the bash hook there too:
+
+```bash
+echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
+```
+
 ### pyenv
 
 ```bash
@@ -98,6 +111,18 @@ cat <<'EOF' >> ~/.zshrc
 export PYENV_ROOT="$HOME/.pyenv"
 if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv init - zsh)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+EOF
+```
+
+If you still use `bash`, add the matching init there too:
+
+```bash
+cat <<'EOF' >> ~/.bashrc
+export PYENV_ROOT="$HOME/.pyenv"
+if command -v pyenv >/dev/null 2>&1; then
+  eval "$(pyenv init - bash)"
   eval "$(pyenv virtualenv-init -)"
 fi
 EOF
@@ -141,6 +166,8 @@ Recommended baseline:
 uv python install 3.12
 pyenv install 3.12.2
 ```
+
+The install script runs both by default. Override them with `PYTHON_VERSION=3.12` and `PYENV_INSTALL_VERSION=3.12.2`.
 
 ## SSH
 
@@ -245,9 +272,12 @@ bash MACOS/install.sh
 
 Optional environment flags:
 
+- `PROJECTS_DIR=~/Projects`
 - `INSTALL_DOCKER=0`
+- `INSTALL_OPENCODE=0`
 - `INSTALL_CODEX=0`
 - `PYTHON_VERSION=3.12`
+- `PYENV_INSTALL_VERSION=3.12.2`
 
 ## Verification checklist
 
@@ -262,3 +292,6 @@ Optional environment flags:
 - `docker --version`
 - `docker compose version`
 - `multipass version`
+- `trufflehog --version`
+- `terraform version`
+- `doctl version`

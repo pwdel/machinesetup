@@ -8,7 +8,9 @@ fi
 
 PROJECTS_DIR="${PROJECTS_DIR:-$HOME/Projects}"
 PYTHON_VERSION="${PYTHON_VERSION:-3.12}"
+PYENV_INSTALL_VERSION="${PYENV_INSTALL_VERSION:-3.12.2}"
 INSTALL_DOCKER="${INSTALL_DOCKER:-1}"
+INSTALL_OPENCODE="${INSTALL_OPENCODE:-1}"
 INSTALL_CODEX="${INSTALL_CODEX:-1}"
 
 append_if_missing() {
@@ -30,8 +32,15 @@ append_block_if_missing() {
   fi
 }
 
+print_step() {
+  printf '  %d. %s\n' "$STEP" "$1"
+  STEP=$((STEP + 1))
+}
+
 if ! xcode-select -p >/dev/null 2>&1; then
-  echo "Xcode Command Line Tools are not installed. Run: xcode-select --install" >&2
+  echo "Xcode Command Line Tools are not installed. Launching the installer..." >&2
+  xcode-select --install || true
+  echo "Finish the Command Line Tools installation, then rerun this script." >&2
   exit 1
 fi
 
@@ -46,7 +55,11 @@ append_if_missing "$HOME/.bash_profile" 'eval "$(/opt/homebrew/bin/brew shellenv
 append_if_missing "$HOME/.bashrc" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 
 brew update
-brew install ansible multipass direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh opencode
+brew install ansible multipass direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl
+
+if [[ "$INSTALL_OPENCODE" == "1" ]]; then
+  brew install opencode
+fi
 
 if [[ "$INSTALL_CODEX" == "1" ]]; then
   brew install --cask codex
@@ -57,6 +70,7 @@ if [[ "$INSTALL_DOCKER" == "1" ]]; then
 fi
 
 append_if_missing "$HOME/.zshrc" 'eval "$(direnv hook zsh)"'
+append_if_missing "$HOME/.bashrc" 'eval "$(direnv hook bash)"'
 append_if_missing "$HOME/.zshrc" 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"'
 append_if_missing "$HOME/.bashrc" 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"'
 
@@ -65,6 +79,16 @@ append_block_if_missing "$HOME/.zshrc" '# machinesetup-pyenv-init' "$(cat <<'EOF
 export PYENV_ROOT="$HOME/.pyenv"
 if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv init - zsh)"
+  eval "$(pyenv virtualenv-init -)"
+fi
+EOF
+)"
+
+append_block_if_missing "$HOME/.bashrc" '# machinesetup-pyenv-init' "$(cat <<'EOF'
+# machinesetup-pyenv-init
+export PYENV_ROOT="$HOME/.pyenv"
+if command -v pyenv >/dev/null 2>&1; then
+  eval "$(pyenv init - bash)"
   eval "$(pyenv virtualenv-init -)"
 fi
 EOF
@@ -89,24 +113,76 @@ EOF
 )"
 
 uv python install "$PYTHON_VERSION"
+pyenv install -s "$PYENV_INSTALL_VERSION"
+
+if [[ "$INSTALL_OPENCODE" == "1" ]] && ! command -v opencode >/dev/null 2>&1; then
+  echo "OpenCode installation appears to have failed." >&2
+  exit 1
+fi
 
 if [[ -d "$PROJECTS_DIR/socialpredict" ]]; then
   mkdir -p "$PROJECTS_DIR/socialpredict/data/postgres" "$PROJECTS_DIR/socialpredict/data/certbot"
   chown -R "$(whoami)":staff "$PROJECTS_DIR/socialpredict/data"
 fi
 
-cat <<EOF
+echo
+echo "Install complete."
+echo
+echo "Next recommended steps:"
+STEP=1
+print_step 'Restart your shell or run: source ~/.zprofile && source ~/.zshrc'
 
-Install complete.
+if [[ ! -f "$HOME/.ssh/id_ed25519" ]]; then
+  print_step 'If you need SSH access: ssh-keygen -t ed25519 -C "your_email@example.com" && eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519 && pbcopy < ~/.ssh/id_ed25519.pub'
+fi
 
-Next recommended steps:
-  1. Restart your shell or run: source ~/.zprofile && source ~/.zshrc
-  2. cd $PROJECTS_DIR/safe && direnv allow && pre-commit install
-  3. cd $PROJECTS_DIR/mlx-test && direnv allow && uv sync
-  4. If Docker Desktop was installed, open it once before using socialpredict
-  5. Verify Ansible and Multipass with: ansible --version && multipass version
-  6. Try the shell helpers: safe-bootstrap && safe-vm
+print_step "If you use safe: cd $PROJECTS_DIR/safe && pre-commit install && bash infra/scripts/bootstrap_mac.sh"
+print_step "If you use mlx-test: cd $PROJECTS_DIR/mlx-test && direnv allow && uv sync && python -c \"import mlx.core as mx; print(mx.array([1, 2, 3]))\" && mlx-smoke-test && mlx-code-smoke-test"
 
-Reference:
-  $PROJECTS_DIR/machinesetup/MACOS/MACOS.md
-EOF
+if [[ "$INSTALL_OPENCODE" == "1" ]]; then
+  print_step 'Verify OpenCode with: opencode --version'
+fi
+
+if [[ "$INSTALL_CODEX" == "1" ]]; then
+  print_step 'Verify Codex with: codex --version'
+fi
+
+if [[ "$INSTALL_DOCKER" == "1" ]]; then
+  print_step "If you use socialpredict: open Docker Desktop once, then cd $PROJECTS_DIR/socialpredict && mkdir -p data/postgres data/certbot && chown -R \"\$(whoami)\":staff data && ./SocialPredict install && ./SocialPredict up"
+fi
+
+print_step 'Try the shell helpers: safe-bootstrap && safe-vm'
+
+echo
+echo "Verification checklist:"
+echo "  brew --version"
+echo "  direnv version"
+echo "  uv --version"
+echo "  pyenv --version"
+echo "  pre-commit --version"
+if [[ "$INSTALL_OPENCODE" == "1" ]]; then
+  echo "  opencode --version"
+fi
+echo "  ansible --version"
+if [[ "$INSTALL_CODEX" == "1" ]]; then
+  echo "  codex --version"
+fi
+if [[ "$INSTALL_DOCKER" == "1" ]]; then
+  echo "  docker --version"
+  echo "  docker compose version"
+fi
+echo "  multipass version"
+echo "  trufflehog --version"
+echo "  terraform version"
+echo "  doctl version"
+echo
+echo "Optional environment flags:"
+echo "  PROJECTS_DIR=~/Projects"
+echo "  INSTALL_DOCKER=0"
+echo "  INSTALL_OPENCODE=0"
+echo "  INSTALL_CODEX=0"
+echo "  PYTHON_VERSION=3.12"
+echo "  PYENV_INSTALL_VERSION=3.12.2"
+echo
+echo "Reference:"
+echo "  $PROJECTS_DIR/machinesetup/MACOS/MACOS.md"
