@@ -122,14 +122,13 @@ append_if_missing "$HOME/.bashrc" "$BREW_SHELLENV_LINE"
 append_if_missing "$HOME/.zprofile" "$BREW_SHELLENV_LINE"
 
 brew update
-brew install ansible direnv uv go pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6
+brew install ansible direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6
 
 if [[ "$INSTALL_OPENCODE" == "1" ]]; then
   brew install opencode
 fi
 
 if [[ "$INSTALL_CODEX" == "1" ]]; then
-  brew install node
   npm install -g @openai/codex
 fi
 
@@ -245,6 +244,11 @@ if ! command -v k6 >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v node >/dev/null 2>&1; then
+  echo "Node installation appears to have failed." >&2
+  exit 1
+fi
+
 if [[ "$INSTALL_OPENCODE" == "1" ]] && ! command -v opencode >/dev/null 2>&1; then
   echo "OpenCode installation appears to have failed." >&2
   exit 1
@@ -300,6 +304,7 @@ echo "  brew --version"
 echo "  direnv version"
 echo "  uv --version"
 echo "  go version"
+echo "  node --version"
 echo "  pyenv --version"
 echo "  pre-commit --version"
 if [[ "$INSTALL_OPENCODE" == "1" ]]; then

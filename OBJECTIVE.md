@@ -24,5 +24,6 @@ The machine setup layer should:
 - [x] Install and document UUID generation helpers
 - [x] Add apt-based Linux setup guidance and installer
 - [x] Add API conformance CLI installs
+- [x] Install and document Node for wrapper scripts
 - [x] Install and document the k6 load testing CLI
 - [ ] Document the final macOS control-plane workflow once the `safe` remote-host path is complete

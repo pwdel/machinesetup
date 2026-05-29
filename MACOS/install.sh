@@ -55,7 +55,7 @@ append_if_missing "$HOME/.bash_profile" 'eval "$(/opt/homebrew/bin/brew shellenv
 append_if_missing "$HOME/.bashrc" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 
 brew update
-brew install ansible multipass direnv uv go pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6
+brew install ansible multipass direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6
 
 if [[ "$INSTALL_OPENCODE" == "1" ]]; then
   brew install opencode
@@ -151,6 +151,11 @@ if ! command -v k6 >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v node >/dev/null 2>&1; then
+  echo "Node installation appears to have failed." >&2
+  exit 1
+fi
+
 if [[ "$INSTALL_OPENCODE" == "1" ]] && ! command -v opencode >/dev/null 2>&1; then
   echo "OpenCode installation appears to have failed." >&2
   exit 1
@@ -197,6 +202,7 @@ echo "  uuid -v 4"
 echo "  direnv version"
 echo "  uv --version"
 echo "  go version"
+echo "  node --version"
 echo "  pyenv --version"
 echo "  pre-commit --version"
 if [[ "$INSTALL_OPENCODE" == "1" ]]; then

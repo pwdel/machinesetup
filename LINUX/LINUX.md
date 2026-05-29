@@ -49,6 +49,7 @@ Install:
 - `direnv`
 - `uv`
 - `go`
+- `node`
 - `pyenv`
 - `pyenv-virtualenv`
 - `pre-commit`
@@ -63,7 +64,7 @@ Install:
 - `opencode`
 
 ```bash
-brew install ansible direnv uv go pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6 opencode
+brew install ansible direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6 opencode
 sudo snap install multipass
 ```
 
@@ -77,7 +78,6 @@ Install:
 - Docker Engine with the Compose plugin
 
 ```bash
-brew install node
 npm install -g @openai/codex
 curl -fsSL https://get.docker.com | sh
 ```
@@ -194,6 +194,7 @@ The install script runs both by default. Override them with `PYTHON_VERSION=3.12
 - `direnv version`
 - `uv --version`
 - `go version`
+- `node --version`
 - `pyenv --version`
 - `pre-commit --version`
 - `opencode --version`
@@ -348,6 +349,7 @@ Optional environment flags:
 - `direnv version`
 - `uv --version`
 - `go version`
+- `node --version`
 - `pyenv --version`
 - `pre-commit --version`
 - `opencode --version`
