@@ -1,38 +1,44 @@
-# MacOS Setup
+# Linux Setup
 
-This repo is a portable, versioned simulation of a user-scoped AI coding setup on macOS.
+This repo is a portable, versioned simulation of a user-scoped AI coding setup on Linux.
 
 The long-term target is still a real user-scoped machine configuration such as:
 
 - `~/.codex`
 - `~/.config/opencode`
-- shell startup files like `~/.zprofile` and `~/.zshrc`
-- user-installed tools from Homebrew
+- shell startup files like `~/.profile`, `~/.bashrc`, and `~/.zshrc`
+- user-installed tools from Homebrew, `apt`, `snap`, and vendor installers
 
 This repo exists to document and automate that environment in a reviewable way.
 
 ## Baseline assumptions
 
-- Host OS: macOS on Apple silicon
-- Shell: `zsh`
+- Host OS: Ubuntu or Debian-family Linux
+- Package manager: `apt`
+- Shell: `bash` or `zsh`
 - Projects root: `~/Projects`
-- Homebrew prefix: `/opt/homebrew`
+- Homebrew prefix: `/home/linuxbrew/.linuxbrew` or `~/.linuxbrew`
+- Privilege model: passwordless or interactive `sudo`
 
 ## Machine-level prerequisites
 
-### Xcode Command Line Tools
+### Apt bootstrap packages
 
 ```bash
-xcode-select --install
+sudo apt-get update
+sudo apt-get install -y build-essential curl file git procps ca-certificates unzip xz-utils make gettext libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev liblzma-dev tk-dev libncursesw5-dev
 ```
+
+These cover Homebrew bootstrap, Python build dependencies for `pyenv`, and the basic Linux system tools the installer expects.
 
 ### Homebrew
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
+NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 ```
+
+If your Homebrew install lands under `~/.linuxbrew`, use that path instead.
 
 ### Core CLI tools
 
@@ -56,53 +62,43 @@ Install:
 - `opencode`
 
 ```bash
-brew install ansible multipass direnv uv go pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid opencode
+brew install ansible direnv uv go pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid opencode
+sudo snap install multipass
 ```
 
-The install script installs these by default. Skip `opencode` with `INSTALL_OPENCODE=0`.
+The install script installs these by default. Skip `opencode` with `INSTALL_OPENCODE=0`. Skip `multipass` with `INSTALL_MULTIPASS=0`.
 
-### GUI and larger tooling
+### Container and larger tooling
 
 Install:
 
 - `codex`
-- `docker-desktop`
+- Docker Engine with the Compose plugin
 
 ```bash
-brew install --cask codex docker-desktop
+brew install node
+npm install -g @openai/codex
+curl -fsSL https://get.docker.com | sh
 ```
 
-The install script installs these casks by default. Skip them with `INSTALL_CODEX=0` or `INSTALL_DOCKER=0`.
+The install script installs these by default. Skip them with `INSTALL_CODEX=0` or `INSTALL_DOCKER=0`.
 
 ## Shell configuration
-
-Sample source-of-truth files for the macOS shell setup live here:
-
-- `MACOS/templates/zprofile.example`
-- `MACOS/templates/zshrc.example`
 
 ### Homebrew
 
 ```bash
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.zprofile
 ```
 
-If you still use `bash`, add the same shellenv there too:
-
-```bash
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bashrc
-```
+If your Homebrew install lives under `~/.linuxbrew`, use that path instead.
 
 ### User-local CLI path
 
 ```bash
 echo "export PATH=\"$HOME/.local/bin:$PATH\"" >> ~/.zshrc
-```
-
-If you still use `bash`, add the same path there too:
-
-```bash
 echo "export PATH=\"$HOME/.local/bin:$PATH\"" >> ~/.bashrc
 ```
 
@@ -110,11 +106,6 @@ echo "export PATH=\"$HOME/.local/bin:$PATH\"" >> ~/.bashrc
 
 ```bash
 echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
-```
-
-If you still use `bash`, add the bash hook there too:
-
-```bash
 echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
 ```
 
@@ -145,13 +136,8 @@ EOF
 ### gettext / envsubst
 
 ```bash
-echo 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"' >> ~/.zshrc
-```
-
-If you still use `bash`, add the same path there too:
-
-```bash
-echo 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"' >> ~/.bashrc
+echo 'export PATH="$(brew --prefix gettext)/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="$(brew --prefix gettext)/bin:$PATH"' >> ~/.bashrc
 ```
 
 ### UUID helper
@@ -227,14 +213,14 @@ The install script runs both by default. Override them with `PYTHON_VERSION=3.12
 ssh-keygen -t ed25519 -C "your_email@example.com"
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
-pbcopy < ~/.ssh/id_ed25519.pub
+cat ~/.ssh/id_ed25519.pub
 ```
 
 ## AI coding tools
 
 ### Codex
 
-- install via Homebrew cask
+- install via `npm install -g @openai/codex`
 - keep user-scoped config under `~/.codex`
 - use repo-local `.envrc` only when intentionally simulating or overriding `CODEX_HOME`
 
@@ -302,7 +288,7 @@ mlx-code-smoke-test
 
 Requirements:
 
-- Docker Desktop
+- Docker Engine with the Compose plugin
 - `gettext` for `envsubst`
 
 Bootstrap:
@@ -310,31 +296,24 @@ Bootstrap:
 ```bash
 cd ~/Projects/socialpredict
 mkdir -p data/postgres data/certbot
-chown -R "$(whoami)":staff data
+chown -R "$(whoami)":"$(id -gn)" data
 ./SocialPredict install
 ./SocialPredict up
 ```
 
 ## Multipass
 
-Multipass is the recommended VM layer for the `safe` automation stack on macOS Apple silicon. The intended stack is:
-
-- macOS host
-- Multipass VM
-- Docker inside the VM
-- automated coding inside containers running against isolated forks
+Multipass remains the recommended VM layer for the `safe` automation stack on Linux. On Linux it is typically installed with `snap` and works best on a host with `systemd`, `snapd`, and nested virtualization support if you are already inside a VM.
 
 ```bash
-brew install multipass
+sudo snap install multipass
 ```
-
-Vagrant still belongs in the broader machine setup toolbox, but it is not the recommended `safe` implementation on Apple silicon.
 
 ## Ansible
 
 Ansible is also a required host dependency. The intended pattern is:
 
-- the macOS host runs Ansible
+- the Linux host runs Ansible
 - Ansible provisions the Multipass guest
 - the guest installs and manages Docker
 - coding workloads run inside Docker rather than directly on the host or directly on the VM
@@ -347,13 +326,14 @@ brew install ansible
 
 ```bash
 cd ~/Projects/machinesetup
-bash MACOS/install.sh
+bash LINUX/install.sh
 ```
 
 Optional environment flags:
 
 - `PROJECTS_DIR=~/Projects`
 - `INSTALL_DOCKER=0`
+- `INSTALL_MULTIPASS=0`
 - `INSTALL_OPENCODE=0`
 - `INSTALL_CODEX=0`
 - `PYTHON_VERSION=3.12`
@@ -361,8 +341,8 @@ Optional environment flags:
 
 ## Verification checklist
 
-- `brew --version`
 - `uuid -v 4`
+- `brew --version`
 - `direnv version`
 - `uv --version`
 - `go version`

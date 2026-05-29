@@ -11,6 +11,11 @@ if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
 fi
 
+# machinesetup-uuid-tools
+new_uuid() {
+  uuid -v 4
+}
+
 # safe-vm-tools
 alias mp='multipass'
 alias ap='ansible-playbook'
