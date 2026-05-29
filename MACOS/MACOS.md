@@ -53,10 +53,11 @@ Install:
 - `terraform`
 - `doctl`
 - `ossp-uuid`
+- `k6`
 - `opencode`
 
 ```bash
-brew install ansible multipass direnv uv go pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid opencode
+brew install ansible multipass direnv uv go pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6 opencode
 ```
 
 The install script installs these by default. Skip `opencode` with `INSTALL_OPENCODE=0`.
@@ -218,6 +219,7 @@ The install script runs both by default. Override them with `PYTHON_VERSION=3.12
 - `trufflehog --version`
 - `terraform version`
 - `doctl version`
+- `k6 version`
 - `kin-openapi-validate --help`
 - `schemathesis --version`
 
@@ -377,5 +379,6 @@ Optional environment flags:
 - `trufflehog --version`
 - `terraform version`
 - `doctl version`
+- `k6 version`
 - `kin-openapi-validate --help`
 - `schemathesis --version`
