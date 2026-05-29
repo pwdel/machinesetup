@@ -13,7 +13,7 @@ This repo is meant to document and automate a user-scoped development environmen
 
 Both installers target the same core workflow and toolchain:
 
-- Core CLI: `ansible`, `multipass`, `direnv`, `uv`, `go`, `pyenv`, `pyenv-virtualenv`, `pre-commit`, `gettext`, `tree`, `gh`, `trufflehog`, `terraform`, `doctl`, `ossp-uuid`
+- Core CLI: `ansible`, `multipass`, `direnv`, `uv`, `go`, `node`, `pyenv`, `pyenv-virtualenv`, `pre-commit`, `gettext`, `tree`, `gh`, `trufflehog`, `terraform`, `doctl`, `ossp-uuid`, `k6`
 - AI tooling: `opencode` and `codex`, both enabled by default
 - API conformance tooling: `kin-openapi-validate` and `schemathesis`
 - Container tooling: macOS installs `docker-desktop`; Linux installs Docker Engine with the Compose plugin
