@@ -1,25 +1,33 @@
 # machinesetup
 
-Portable, versioned machine setup for macOS.
+Portable, versioned machine setup for macOS and Linux.
 
 This repo is meant to document and automate a user-scoped development environment, especially for AI-assisted coding. It is intentionally kept in git so setup changes can be reviewed, shared, and reused.
 
 ## Start here
 
-- Read [MACOS/MACOS.md](/Users/patrick/Projects/machinesetup/MACOS/MACOS.md)
-- Run `bash MACOS/install.sh`
+- macOS: read [MACOS/MACOS.md](MACOS/MACOS.md) and run `bash MACOS/install.sh`
+- Linux: read [LINUX/LINUX.md](LINUX/LINUX.md) and run `bash LINUX/install.sh`
 
 ## Default installed tooling
 
-The macOS installer installs these by default:
+Both installers target the same core workflow and toolchain:
 
-- Core CLI: `ansible`, `multipass`, `direnv`, `uv`, `pyenv`, `pyenv-virtualenv`, `pre-commit`, `gettext`, `tree`, `gh`, `trufflehog`, `terraform`, `doctl`
-- AI tooling: `opencode` (formula) and `codex` (cask), both enabled by default
-- Optional GUI tooling: `docker-desktop`, enabled by default
+- Core CLI: `ansible`, `multipass`, `direnv`, `uv`, `go`, `pyenv`, `pyenv-virtualenv`, `pre-commit`, `gettext`, `tree`, `gh`, `trufflehog`, `terraform`, `doctl`, `ossp-uuid`
+- AI tooling: `opencode` and `codex`, both enabled by default
+- API conformance tooling: `kin-openapi-validate` and `schemathesis`
+- Container tooling: macOS installs `docker-desktop`; Linux installs Docker Engine with the Compose plugin
+- UUID helper: both installers add a `new_uuid` shell function backed by `uuid -v 4`
+
+Platform-specific install methods differ where they have to:
+
+- macOS uses Homebrew formulas and casks
+- Linux uses `apt` for bootstrap dependencies, Homebrew for most CLI tools, `snap` for `multipass`, and `npm` for `codex`
 
 ## Installer flags
 
 - `PROJECTS_DIR=~/Projects` (default)
+- `INSTALL_MULTIPASS=1` (Linux default)
 - `INSTALL_OPENCODE=1` (default)
 - `INSTALL_CODEX=1` (default)
 - `INSTALL_DOCKER=1` (default)
@@ -29,14 +37,15 @@ The macOS installer installs these by default:
 ## Scope
 
 - Homebrew bootstrap
+- Linux `apt` bootstrap for build and system dependencies
 - shell setup for `zsh` and optional `bash` compatibility
 - Python tooling via `uv` and `pyenv`
 - AI coding tools like Codex and OpenCode
-- Docker Desktop for local containerized projects
+- Docker tooling for local containerized projects
 - Multipass and Ansible for the `safe` VM workflow
 
 ## Notes
 
-- This repo targets macOS on Apple silicon
+- This repo targets macOS on Apple silicon and apt-based Linux distros
 - The installer is intentionally conservative and uses environment flags for optional tools
-- Repo-specific examples under `~/Projects` are documented in the Mac guide
+- Repo-specific examples under `~/Projects` are documented in the platform guides
