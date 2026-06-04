@@ -1,37 +1,34 @@
-# MacOS Setup
+# Linux Setup
 
-This repo is a portable, versioned simulation of a user-scoped AI coding setup on macOS.
+This repo can also bootstrap a user-scoped AI coding setup on Linux.
 
-The long-term target is still a real user-scoped machine configuration such as:
-
-- `~/.codex`
-- `~/.config/opencode`
-- shell startup files like `~/.zprofile` and `~/.zshrc`
-- user-installed tools from Homebrew
-
-This repo exists to document and automate that environment in a reviewable way.
+The Linux path aims for the same toolset as macOS where practical, with Linux-native equivalents where needed.
 
 ## Baseline assumptions
 
-- Host OS: macOS on Apple silicon
+- Host OS: Ubuntu or Debian
 - Shell: `zsh`
 - Projects root: `~/Projects`
-- Homebrew prefix: `/opt/homebrew`
+- Homebrew prefix: `/home/linuxbrew/.linuxbrew`
 
 ## Machine-level prerequisites
 
-### Xcode Command Line Tools
+Install baseline system packages:
 
 ```bash
-xcode-select --install
+sudo apt-get update
+sudo apt-get install -y build-essential ca-certificates curl file git gnupg lsb-release procps unzip zsh
 ```
 
 ### Homebrew
 
+Homebrew on Linux is used here to keep most tool names and versions aligned with the macOS setup.
+
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
+NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 ```
 
 ### Core CLI tools
@@ -98,34 +95,32 @@ brew install \
   uvw
 ```
 
-### Container tooling
+## Docker
 
-Install:
-
-- `docker-buildx`
-- `docker-compose`
-
-These are installed as CLI tools so Docker workflows remain available even when Docker Desktop is the main GUI/runtime entry point.
-
-### GUI and larger tooling
-
-Install:
-
-- `docker`
-- `docker-desktop`
-- `multipass`
-- `vagrant`
+On Linux, the closest equivalent to Docker Desktop for most development work is Docker Engine from Docker's official apt repository.
 
 ```bash
-brew install --cask docker docker-desktop multipass vagrant
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo usermod -aG docker "$USER"
 ```
+
+Log out and back in after adding your user to the `docker` group.
 
 ## Shell configuration
 
 ### Homebrew
 
 ```bash
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.zprofile
 ```
 
 ### direnv
@@ -138,6 +133,7 @@ echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
 
 ```bash
 cat <<'EOF' >> ~/.zshrc
+# machinesetup-pyenv-init
 export PYENV_ROOT="$HOME/.pyenv"
 if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv init - zsh)"
@@ -149,27 +145,17 @@ EOF
 ### gettext / envsubst
 
 ```bash
-echo 'export PATH="/opt/homebrew/opt/gettext/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="/home/linuxbrew/.linuxbrew/opt/gettext/bin:$PATH"' >> ~/.zshrc
 ```
 
 ## Python strategy
 
-Prefer `uv` and `pyenv` over shell aliases like `python=python3`.
+Prefer `uv` and `pyenv` over distro Python customization.
 
 Recommended baseline:
 
 ```bash
 uv python install 3.12
-pyenv install 3.12.2
-```
-
-## SSH
-
-```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
-pbcopy < ~/.ssh/id_ed25519.pub
 ```
 
 ## AI coding tools
@@ -178,7 +164,6 @@ pbcopy < ~/.ssh/id_ed25519.pub
 
 - install the CLI via npm
 - keep user-scoped config under `~/.codex`
-- use repo-local `.envrc` only when intentionally simulating or overriding `CODEX_HOME`
 
 ```bash
 npm install -g @openai/codex
@@ -188,62 +173,23 @@ npm install -g @openai/codex
 
 - install via Homebrew formula
 - keep user-scoped config under `~/.config/opencode`
-- use repo-local wrappers only when intentionally simulating XDG state in a project
-
-## Example repo-specific bootstrap
-
-### `safe`
-
-```bash
-cd ~/Projects/safe
-direnv allow
-pre-commit install
-```
-
-### `mlx-test`
-
-```bash
-cd ~/Projects/mlx-test
-direnv allow
-uv sync
-python -c "import mlx.core as mx; print(mx.array([1, 2, 3]))"
-mlx-smoke-test
-mlx-code-smoke-test
-```
-
-### `socialpredict`
-
-Requirements:
-
-- Docker Desktop
-- `gettext` for `envsubst`
-
-Bootstrap:
-
-```bash
-cd ~/Projects/socialpredict
-mkdir -p data/postgres data/certbot
-chown -R "$(whoami)":staff data
-./SocialPredict install
-./SocialPredict up
-```
 
 ## Vagrant
 
-Vagrant is optional but useful when isolating automated coding work in a VM:
+Vagrant is optional:
 
 ```bash
-brew install --cask vagrant
+sudo apt-get install -y vagrant
 ```
 
 ## One-shot installer
 
 ```bash
 cd ~/Projects/machinesetup
-bash MACOS/install.sh
+bash LINUX/install.sh
 ```
 
-The installer upgrades managed Homebrew formulas and casks when they are already installed.
+The installer upgrades managed Homebrew formulas and refreshes Docker Engine packages when they are already installed.
 
 Optional environment flags:
 
@@ -283,6 +229,5 @@ Optional environment flags:
 - `opencode --version`
 - `codex --version`
 - `docker --version`
-- `multipass version`
 - `docker compose version`
 - `vagrant --version`

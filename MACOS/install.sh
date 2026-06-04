@@ -31,6 +31,28 @@ append_block_if_missing() {
   fi
 }
 
+brew_install_or_upgrade_formula() {
+  local formula
+  for formula in "$@"; do
+    if brew list --formula "$formula" >/dev/null 2>&1; then
+      brew upgrade "$formula"
+    else
+      brew install "$formula"
+    fi
+  done
+}
+
+brew_install_or_upgrade_cask() {
+  local cask
+  for cask in "$@"; do
+    if brew list --cask "$cask" >/dev/null 2>&1; then
+      brew upgrade --cask "$cask"
+    else
+      brew install --cask "$cask"
+    fi
+  done
+}
+
 if ! xcode-select -p >/dev/null 2>&1; then
   echo "Xcode Command Line Tools are not installed. Run: xcode-select --install" >&2
   exit 1
@@ -45,18 +67,46 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 append_if_missing "$HOME/.zprofile" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 
 brew update
-brew install direnv uv pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl opencode
+brew tap hashicorp/tap
+brew_install_or_upgrade_formula \
+  ansible \
+  asciinema \
+  dasel \
+  doctl \
+  direnv \
+  docker-buildx \
+  docker-compose \
+  ffmpeg \
+  gh \
+  gettext \
+  go \
+  go-critic \
+  golangci-lint \
+  gosec \
+  htop \
+  jq \
+  node \
+  opencode \
+  pre-commit \
+  pyenv \
+  pyenv-virtualenv \
+  staticcheck \
+  hashicorp/tap/terraform \
+  tree \
+  trufflehog \
+  uv \
+  uvw
 
 if [[ "$INSTALL_CODEX" == "1" ]]; then
-  brew install --cask codex
+  npm install -g @openai/codex
 fi
 
 if [[ "$INSTALL_DOCKER" == "1" ]]; then
-  brew install --cask docker-desktop
+  brew_install_or_upgrade_cask docker docker-desktop multipass
 fi
 
 if [[ "$INSTALL_VAGRANT" == "1" ]]; then
-  brew install --cask vagrant
+  brew_install_or_upgrade_cask vagrant
 fi
 
 append_if_missing "$HOME/.zshrc" 'eval "$(direnv hook zsh)"'
@@ -85,10 +135,9 @@ Install complete.
 
 Next recommended steps:
   1. Restart your shell or run: source ~/.zprofile && source ~/.zshrc
-  2. cd $PROJECTS_DIR/safe && direnv allow && pre-commit install
-  3. cd $PROJECTS_DIR/mlx-test && direnv allow && uv sync
-  4. If Docker Desktop was installed, open it once before using socialpredict
+  2. Run direnv allow in any project that uses a .envrc
+  3. If Docker Desktop was installed, open it once before using an app that needs it
 
 Reference:
-  $PROJECTS_DIR/machinesetup/MACOS/MACOS.md
+  ~/Projects/machinesetup/MACOS/MACOS.md
 EOF
