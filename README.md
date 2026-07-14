@@ -16,6 +16,7 @@ Both installers target the same core workflow and toolchain:
 - Core CLI: `ansible`, `multipass`, `direnv`, `uv`, `go`, `node`, `pyenv`, `pyenv-virtualenv`, `pre-commit`, `gettext`, `tree`, `gh`, `trufflehog`, `terraform`, `doctl`, `ossp-uuid`, `k6`
 - AI tooling: `opencode` and `codex`, both enabled by default
 - API conformance tooling: `kin-openapi-validate` and `schemathesis`
+- Python library baseline: `PyYAML` for `import yaml` in the baseline `pyenv` Python
 - Container tooling: macOS installs `docker-desktop`; Linux installs Docker Engine with the Compose plugin
 - UUID helper: both installers add a `new_uuid` shell function backed by `uuid -v 4`
 
@@ -39,7 +40,7 @@ Platform-specific install methods differ where they have to:
 - Homebrew bootstrap
 - Linux `apt` bootstrap for build and system dependencies
 - shell setup for `zsh` and optional `bash` compatibility
-- Python tooling via `uv` and `pyenv`
+- Python tooling via `uv`, `pyenv`, and PyYAML
 - AI coding tools like Codex and OpenCode
 - Docker tooling for local containerized projects
 - Multipass and Ansible for the `safe` VM workflow
