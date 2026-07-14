@@ -132,6 +132,8 @@ EOF
 
 uv python install "$PYTHON_VERSION"
 pyenv install -s "$PYENV_INSTALL_VERSION"
+PYENV_PYTHON="$(pyenv root)/versions/$PYENV_INSTALL_VERSION/bin/python"
+uv pip install --python "$PYENV_PYTHON" --upgrade PyYAML
 
 mkdir -p "$HOME/.local/bin"
 export PATH="$HOME/.local/bin:$PATH"
@@ -153,6 +155,11 @@ fi
 
 if ! command -v node >/dev/null 2>&1; then
   echo "Node installation appears to have failed." >&2
+  exit 1
+fi
+
+if ! "$PYENV_PYTHON" -c 'import yaml' >/dev/null 2>&1; then
+  echo "PyYAML installation appears to have failed." >&2
   exit 1
 fi
 
@@ -204,6 +211,7 @@ echo "  uv --version"
 echo "  go version"
 echo "  node --version"
 echo "  pyenv --version"
+echo "  $PYENV_PYTHON -c 'import yaml'"
 echo "  pre-commit --version"
 if [[ "$INSTALL_OPENCODE" == "1" ]]; then
   echo "  opencode --version"

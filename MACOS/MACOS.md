@@ -198,9 +198,10 @@ Recommended baseline:
 ```bash
 uv python install 3.12
 pyenv install 3.12.2
+uv pip install --python "$(pyenv root)/versions/3.12.2/bin/python" --upgrade PyYAML
 ```
 
-The install script runs both by default. Override them with `PYTHON_VERSION=3.12` and `PYENV_INSTALL_VERSION=3.12.2`.
+The install script runs both Python installers and installs PyYAML into the baseline `pyenv` Python by default. Override the Python versions with `PYTHON_VERSION=3.12` and `PYENV_INSTALL_VERSION=3.12.2`. The package name is `PyYAML`; the Python import name is `yaml`.
 
 ## Verification checklist
 
@@ -211,6 +212,7 @@ The install script runs both by default. Override them with `PYTHON_VERSION=3.12
 - `go version`
 - `node --version`
 - `pyenv --version`
+- `$(pyenv root)/versions/3.12.2/bin/python -c "import yaml"`
 - `pre-commit --version`
 - `opencode --version`
 - `ansible --version`
@@ -372,6 +374,7 @@ Optional environment flags:
 - `go version`
 - `node --version`
 - `pyenv --version`
+- `$(pyenv root)/versions/3.12.2/bin/python -c "import yaml"`
 - `pre-commit --version`
 - `opencode --version`
 - `ansible --version`
