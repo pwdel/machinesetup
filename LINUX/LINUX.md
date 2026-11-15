@@ -56,19 +56,24 @@ Install:
 - `gettext`
 - `tree`
 - `gh`
+- `ripgrep` (`rg`)
 - `trufflehog`
 - `terraform`
 - `doctl`
 - `ossp-uuid`
 - `k6`
+- `asciinema`
+- `ffmpeg` (includes `ffprobe`)
 - `opencode`
 
 ```bash
-brew install ansible direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6 opencode
+brew install ansible direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh ripgrep trufflehog terraform doctl ossp-uuid k6 asciinema ffmpeg opencode
 sudo snap install multipass
 ```
 
 The install script installs these by default. Skip `opencode` with `INSTALL_OPENCODE=0`. Skip `multipass` with `INSTALL_MULTIPASS=0`.
+
+Set `INSTALL_OBS=1` to install OBS Studio from your distribution's package repository.
 
 ### Container and larger tooling
 

@@ -18,6 +18,7 @@ INSTALL_DOCKER="${INSTALL_DOCKER:-1}"
 INSTALL_MULTIPASS="${INSTALL_MULTIPASS:-1}"
 INSTALL_OPENCODE="${INSTALL_OPENCODE:-1}"
 INSTALL_CODEX="${INSTALL_CODEX:-1}"
+INSTALL_OBS="${INSTALL_OBS:-0}"
 
 if [[ ${EUID} -eq 0 ]]; then
   SUDO=()
@@ -122,7 +123,11 @@ append_if_missing "$HOME/.bashrc" "$BREW_SHELLENV_LINE"
 append_if_missing "$HOME/.zprofile" "$BREW_SHELLENV_LINE"
 
 brew update
-brew install ansible direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6
+brew install ansible direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh ripgrep trufflehog terraform doctl ossp-uuid k6 asciinema ffmpeg
+
+if [[ "$INSTALL_OBS" == "1" ]]; then
+  "${SUDO[@]}" apt-get install -y obs-studio
+fi
 
 if [[ "$INSTALL_OPENCODE" == "1" ]]; then
   brew install opencode
@@ -333,6 +338,10 @@ echo "  trufflehog --version"
 echo "  terraform version"
 echo "  doctl version"
 echo "  k6 version"
+echo "  rg --version"
+echo "  asciinema --version"
+echo "  ffmpeg -version"
+echo "  ffprobe -version"
 echo "  kin-openapi-validate --help"
 echo "  schemathesis --version"
 echo
@@ -342,6 +351,7 @@ echo "  INSTALL_DOCKER=0"
 echo "  INSTALL_MULTIPASS=0"
 echo "  INSTALL_OPENCODE=0"
 echo "  INSTALL_CODEX=0"
+echo "  INSTALL_OBS=1"
 echo "  PYTHON_VERSION=3.12"
 echo "  PYENV_INSTALL_VERSION=3.12.2"
 echo

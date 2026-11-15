@@ -26,5 +26,6 @@ The machine setup layer should:
 - [x] Add API conformance CLI installs
 - [x] Install and document Node for wrapper scripts
 - [x] Install and document the k6 load testing CLI
+- [x] Install and document asciinema and FFmpeg, with an opt-in OBS Studio install
 - [x] Install and document PyYAML for baseline Python YAML parsing
 - [ ] Document the final macOS control-plane workflow once the `safe` remote-host path is complete
