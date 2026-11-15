@@ -13,12 +13,14 @@ This repo is meant to document and automate a user-scoped development environmen
 
 Both installers target the same core workflow and toolchain:
 
-- Core CLI: `ansible`, `multipass`, `direnv`, `uv`, `go`, `node`, `pyenv`, `pyenv-virtualenv`, `pre-commit`, `gettext`, `tree`, `gh`, `trufflehog`, `terraform`, `doctl`, `ossp-uuid`, `k6`
+- Core CLI: `ansible`, `multipass`, `direnv`, `uv`, `go`, `node`, `pyenv`, `pyenv-virtualenv`, `pre-commit`, `gettext`, `tree`, `gh`, `ripgrep`, `trufflehog`, `terraform`, `doctl`, `ossp-uuid`, `k6`
 - AI tooling: `opencode` and `codex`, both enabled by default
 - API conformance tooling: `kin-openapi-validate` and `schemathesis`
 - Python library baseline: `PyYAML` for `import yaml` in the baseline `pyenv` Python
 - Container tooling: macOS installs `docker-desktop`; Linux installs Docker Engine with the Compose plugin
 - UUID helper: both installers add a `new_uuid` shell function backed by `uuid -v 4`
+- Media tooling: both installers include asciinema and FFmpeg. Set `INSTALL_OBS=1` for OBS Studio.
+- macOS also installs Publii for static-site editing and iTerm2. Set `INSTALL_GIS=1` for QGIS, GDAL command-line tools, and Poppler PDF tools.
 
 Platform-specific install methods differ where they have to:
 
@@ -28,10 +30,14 @@ Platform-specific install methods differ where they have to:
 ## Installer flags
 
 - `PROJECTS_DIR=~/Projects` (default)
-- `INSTALL_MULTIPASS=1` (Linux default)
+- `INSTALL_MULTIPASS=1` (default)
 - `INSTALL_OPENCODE=1` (default)
 - `INSTALL_CODEX=1` (default)
 - `INSTALL_DOCKER=1` (default)
+- `INSTALL_PUBLII=1` (macOS default)
+- `INSTALL_ITERM2=1` (macOS default)
+- `INSTALL_GIS=0` (macOS default)
+- `INSTALL_OBS=0` (default)
 - `PYTHON_VERSION=3.12` (default)
 - `PYENV_INSTALL_VERSION=3.12.2` (default)
 

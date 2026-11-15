@@ -50,18 +50,25 @@ Install:
 - `gettext`
 - `tree`
 - `gh`
+- `ripgrep` (`rg`)
 - `trufflehog`
 - `terraform`
 - `doctl`
 - `ossp-uuid`
 - `k6`
+- `asciinema`
+- `ffmpeg` (includes `ffprobe`)
 - `opencode`
 
 ```bash
-brew install ansible multipass direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6 opencode
+brew install ansible direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh ripgrep trufflehog doctl ossp-uuid k6 asciinema ffmpeg opencode
+brew install hashicorp/tap/terraform
+brew install --cask multipass
 ```
 
-The install script installs these by default. Skip `opencode` with `INSTALL_OPENCODE=0`.
+The install script installs these by default. Use `INSTALL_OPENCODE=0` or `INSTALL_MULTIPASS=0` to skip the corresponding tool. Skip Multipass when running VMs need to stay available during a maintenance run.
+
+The installer keeps an existing Homebrew Core Terraform. To migrate, remove the Homebrew Core formula when you're ready to switch, then install `hashicorp/tap/terraform`.
 
 ### GUI and larger tooling
 
@@ -69,12 +76,30 @@ Install:
 
 - `codex`
 - `docker-desktop`
+- `publii`
+- `iterm2`
 
 ```bash
-brew install --cask codex docker-desktop
+brew install --cask codex docker-desktop publii iterm2
 ```
 
-The install script installs these casks by default. Skip them with `INSTALL_CODEX=0` or `INSTALL_DOCKER=0`.
+The install script installs these casks by default. Use `INSTALL_CODEX=0`, `INSTALL_DOCKER=0`, `INSTALL_PUBLII=0`, or `INSTALL_ITERM2=0` to skip the corresponding tool.
+
+Set `INSTALL_OBS=1` to include OBS Studio.
+
+The script reuses existing Publii, iTerm2, and OBS Studio apps installed outside Homebrew in Applications. Update those copies through their original installers.
+
+### Static-site editing with Publii
+
+Open Publii and follow the website repository’s editing guide to install its theme, import its content or restore a shared backup, and preview locally. Use the repository’s publishing instructions to deploy the export. For projects that commit static output under `site/`, you can also preview that folder from the repository root with `python3 -m http.server 8093 --bind 127.0.0.1 --directory site`.
+
+### GIS and map publishing
+
+```bash
+INSTALL_GIS=1 bash MACOS/install.sh
+```
+
+This installs QGIS Desktop, GDAL (`gdalinfo` and `ogr2ogr`), and Poppler (`pdftoppm`, `pdftotext`, and `pdfinfo`). If you already installed QGIS in Applications outside Homebrew, the script reuses it. Update that app through its original installer. Keep project-specific PyQGIS scripts in the Python and QGIS environment documented by the project, such as a Debian container when the project requires that version.
 
 ## Shell configuration
 
@@ -360,8 +385,13 @@ Optional environment flags:
 
 - `PROJECTS_DIR=~/Projects`
 - `INSTALL_DOCKER=0`
+- `INSTALL_MULTIPASS=0`
 - `INSTALL_OPENCODE=0`
 - `INSTALL_CODEX=0`
+- `INSTALL_PUBLII=0`
+- `INSTALL_ITERM2=0`
+- `INSTALL_GIS=1`
+- `INSTALL_OBS=1`
 - `PYTHON_VERSION=3.12`
 - `PYENV_INSTALL_VERSION=3.12.2`
 
@@ -383,6 +413,7 @@ Optional environment flags:
 - `docker compose version`
 - `multipass version`
 - `trufflehog --version`
+- `rg --version`
 - `terraform version`
 - `doctl version`
 - `k6 version`

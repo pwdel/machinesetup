@@ -10,8 +10,13 @@ PROJECTS_DIR="${PROJECTS_DIR:-$HOME/Projects}"
 PYTHON_VERSION="${PYTHON_VERSION:-3.12}"
 PYENV_INSTALL_VERSION="${PYENV_INSTALL_VERSION:-3.12.2}"
 INSTALL_DOCKER="${INSTALL_DOCKER:-1}"
+INSTALL_MULTIPASS="${INSTALL_MULTIPASS:-1}"
 INSTALL_OPENCODE="${INSTALL_OPENCODE:-1}"
 INSTALL_CODEX="${INSTALL_CODEX:-1}"
+INSTALL_PUBLII="${INSTALL_PUBLII:-1}"
+INSTALL_ITERM2="${INSTALL_ITERM2:-1}"
+INSTALL_GIS="${INSTALL_GIS:-0}"
+INSTALL_OBS="${INSTALL_OBS:-0}"
 
 append_if_missing() {
   local file="$1"
@@ -37,6 +42,22 @@ print_step() {
   STEP=$((STEP + 1))
 }
 
+install_desktop_app() {
+  local cask="$1"
+  local bundle_id="$2"
+  local app
+  shift 2
+  if ! brew list --cask "$cask" >/dev/null 2>&1; then
+    for app in "$@"; do
+      if [[ "$(plutil -extract CFBundleIdentifier raw "$app/Contents/Info.plist" 2>/dev/null)" == "$bundle_id" ]]; then
+        printf 'Using the existing app at %s. Update it through its original installer.\n' "$app"
+        return
+      fi
+    done
+  fi
+  brew install --cask "$cask"
+}
+
 if ! xcode-select -p >/dev/null 2>&1; then
   echo "Xcode Command Line Tools are not installed. Launching the installer..." >&2
   xcode-select --install || true
@@ -55,7 +76,17 @@ append_if_missing "$HOME/.bash_profile" 'eval "$(/opt/homebrew/bin/brew shellenv
 append_if_missing "$HOME/.bashrc" 'eval "$(/opt/homebrew/bin/brew shellenv)"'
 
 brew update
-brew install ansible multipass direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh trufflehog terraform doctl ossp-uuid k6
+brew install ansible direnv uv go node pyenv pyenv-virtualenv pre-commit gettext tree gh ripgrep trufflehog doctl ossp-uuid k6 asciinema ffmpeg
+installed_formulae="$(brew list --formula --full-name)"
+if grep -Fxq terraform <<<"$installed_formulae"; then
+  echo "Keeping the existing Homebrew Core Terraform. See MACOS/MACOS.md to switch to HashiCorp's package."
+else
+  brew install hashicorp/tap/terraform
+fi
+
+if [[ "$INSTALL_MULTIPASS" == "1" ]]; then
+  brew install --cask multipass
+fi
 
 if [[ "$INSTALL_OPENCODE" == "1" ]]; then
   brew install opencode
@@ -63,6 +94,23 @@ fi
 
 if [[ "$INSTALL_CODEX" == "1" ]]; then
   brew install --cask codex
+fi
+
+if [[ "$INSTALL_PUBLII" == "1" ]]; then
+  install_desktop_app publii com.tidycustoms.publii /Applications/Publii.app "$HOME/Applications/Publii.app"
+fi
+
+if [[ "$INSTALL_ITERM2" == "1" ]]; then
+  install_desktop_app iterm2 com.googlecode.iterm2 /Applications/iTerm.app "$HOME/Applications/iTerm.app"
+fi
+
+if [[ "$INSTALL_GIS" == "1" ]]; then
+  brew install gdal poppler
+  install_desktop_app qgis org.qgis.qgis3 /Applications/QGIS*.app "$HOME"/Applications/QGIS*.app
+fi
+
+if [[ "$INSTALL_OBS" == "1" ]]; then
+  install_desktop_app obs com.obsproject.obs-studio /Applications/OBS.app "$HOME/Applications/OBS.app"
 fi
 
 if [[ "$INSTALL_DOCKER" == "1" ]]; then
@@ -168,6 +216,11 @@ if [[ "$INSTALL_OPENCODE" == "1" ]] && ! command -v opencode >/dev/null 2>&1; th
   exit 1
 fi
 
+if [[ "$INSTALL_CODEX" == "1" ]] && ! command -v codex >/dev/null 2>&1; then
+  echo "Codex CLI installation appears to have failed." >&2
+  exit 1
+fi
+
 if [[ -d "$PROJECTS_DIR/socialpredict" ]]; then
   mkdir -p "$PROJECTS_DIR/socialpredict/data/postgres" "$PROJECTS_DIR/socialpredict/data/certbot"
   chown -R "$(whoami)":staff "$PROJECTS_DIR/socialpredict/data"
@@ -194,6 +247,10 @@ fi
 
 if [[ "$INSTALL_CODEX" == "1" ]]; then
   print_step 'Verify Codex with: codex --version'
+fi
+
+if [[ "$INSTALL_PUBLII" == "1" ]]; then
+  print_step 'Open Publii and follow the editing guide in your website repository.'
 fi
 
 if [[ "$INSTALL_DOCKER" == "1" ]]; then
@@ -224,7 +281,19 @@ if [[ "$INSTALL_DOCKER" == "1" ]]; then
   echo "  docker --version"
   echo "  docker compose version"
 fi
-echo "  multipass version"
+if [[ "$INSTALL_MULTIPASS" == "1" ]]; then
+  echo "  multipass version"
+fi
+if [[ "$INSTALL_GIS" == "1" ]]; then
+  echo "  Open QGIS from Applications"
+  echo "  gdalinfo --version"
+  echo "  ogr2ogr --version"
+  echo "  pdftoppm -v"
+fi
+echo "  rg --version"
+echo "  asciinema --version"
+echo "  ffmpeg -version"
+echo "  ffprobe -version"
 echo "  trufflehog --version"
 echo "  terraform version"
 echo "  doctl version"
@@ -235,8 +304,13 @@ echo
 echo "Optional environment flags:"
 echo "  PROJECTS_DIR=~/Projects"
 echo "  INSTALL_DOCKER=0"
+echo "  INSTALL_MULTIPASS=0"
 echo "  INSTALL_OPENCODE=0"
 echo "  INSTALL_CODEX=0"
+echo "  INSTALL_PUBLII=0"
+echo "  INSTALL_ITERM2=0"
+echo "  INSTALL_GIS=1"
+echo "  INSTALL_OBS=1"
 echo "  PYTHON_VERSION=3.12"
 echo "  PYENV_INSTALL_VERSION=3.12.2"
 echo
